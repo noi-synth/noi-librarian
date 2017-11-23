@@ -3,9 +3,7 @@ from os.path import isfile, join, exists
 from functools import reduce
 from noilibrarian.audio import loadaudio
 from noilibrarian.classifier import classify
-
-def issupported(filename):
-    return filename.lower().endswith('wav')
+from re import match
 
 def readlibfile(libfile):
     f = open(libfile, 'r') 
@@ -32,9 +30,9 @@ def savelibfile(libfile, library):
     f.write(contents)
     f.close()
 
-def create(folder, rewrite = False):
+def create(folder, rewrite = False, pattern = r'.*\.wav'):
     files = [f for f in listdir(folder) 
-                if isfile(join(folder, f)) and issupported(f)]
+                if isfile(join(folder, f)) and match(pattern, f)]
     print('found {} supported files'.format(len(files)))
     
     libfile = join(folder, 'library.noi')

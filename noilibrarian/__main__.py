@@ -4,7 +4,7 @@ def main(args=None):
     libpath = 'library/'
     
     print('creating library...')
-    library = noilibrarian.library.create(libpath, True)
+    library = noilibrarian.library.create(libpath, True, r'.*\.wav')
     
     # print(library)
     

@@ -1,6 +1,12 @@
-from librosa import load, to_mono
+from librosa import load, to_mono, resample
 
 def loadaudio(filename):
     y, sr = load(filename)
     
-    return (to_mono(y), sr)
+    # Force mono
+    y = to_mono(y)
+    
+    # Downsample
+    # y = resample(y, sr, 5512)
+    
+    return (y, sr)
