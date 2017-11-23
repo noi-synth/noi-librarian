@@ -8,4 +8,9 @@ setup(name='noilibrarian',
       author_email='mail@majko.cz',
       license='',
       packages=['noilibrarian'],
-      zip_safe=False)
+      zip_safe=False,
+      entry_points={
+          'console_scripts': [
+              'noilibrarian = noilibrarian.__main__:main'
+          ]
+      },)
