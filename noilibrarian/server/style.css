@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css?family=Work+Sans:600,800');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: #333;
+  font-family: 'Work Sans', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.4;
+  color: white;
+}
+
+h1 {
+  text-align: center;
+  color: #444;
+}
+
+.ui {
+  width: 80vw;
+  position: relative;
+  margin: 25vh auto;
+}
+
+.meter {
+  position: absolute;
+  width: 100%;
+  height: 0.5em;
+  background: -moz-linear-gradient(left, rgba(77,157,224,0.25) 0%, rgba(224,202,60,0.25) 50%, rgba(95,173,86,0.25) 100%);
+  background: -webkit-linear-gradient(left, rgba(77,157,224,0.25) 0%,rgba(224,202,60,0.25) 50%,rgba(95,173,86,0.25) 100%);
+  background: linear-gradient(to right, rgba(77,157,224,0.25) 0%,rgba(224,202,60,0.25) 50%,rgba(95,173,86,0.25) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#404d9de0', endColorstr='#405fad56',GradientType=1 );
+  border-radius: 0.25em;
+}
+
+.sample {
+  z-index: 10;
+  position: absolute;
+  margin-top: -0.75em;
+  display: inline-block;
+  width: 2em;
+  height: 2em;
+  content: '';
+  display: block;
+  border: 0.25em solid transparent;
+  border-radius: 50%;
+}
+
+.sample-details {
+  opacity: 0;
+  padding: 1em 0;
+  position: absolute;
+  top: 4em;
+  transition: all .1s;
+  width: 20em;
+}
+
+.sample:hover {
+  border-color: white;
+}
+
+.sample:hover .sample-details {
+  opacity: 1;
+  top: 2em;
+}
+
+.sample.kick {
+  margin-left: 0;
+  background: #4D9DE0;
+}
+
+.sample.snare {
+  margin-left: 50%;
+  background: #E0CA3C;
+}
+
+.sample.hihat {
+  margin-left: 100%;
+  background: #5FAD56;
+}
+
+.sample.hihat .sample-details {
+  right: 0;
+  text-align: right;
+}
+
+.sample.kick strong {
+  color: #4D9DE0;
+}
+
+.sample.snare strong {
+  color: #E0CA3C;
+}
+
+.sample.hihat strong {
+  color: #5FAD56;
+}
+
+.label {
+  z-index: -10;
+  position: absolute;
+  top: -3em;
+  width: 100%;
+  text-transform: uppercase;
+  opacity: .5;
+}
+
+.label.left {
+  text-align: left;
+  color: #4D9DE0;
+}
+
+.label.center {
+  text-align: center;
+  color: #E0CA3C;
+}
+
+.label.right {
+  text-align: right;
+  color: #5FAD56;
+}

@@ -1,3 +1,48 @@
-hi
+<!doctype html>
+<html>
+  <head>
+    <title>noi librarian preview</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css" type="text/css">
+  </head>
+  <body>
+    <h1>noi librarian preview</h1>
+    
+    <div class="ui">
+      <div class="meter" id="data-place">
+        
+      </div>
+      <div class="label left">kick</div>
+      <div class="label center">snare</div>
+      <div class="label right">hihat</div>
+    </div>
+    
+    <script type="text/javascript">
+      // var data = [[LIBRARY]]
+      var data = [
+        {'filename': '309 hats1_008_wav.wav', 'category': 'hihat', 'offset': -4.16666666667}, 
+        {'filename': '309 hats1_018_wav.wav', 'category': 'snare', 'offset': -3.64285714286}, 
+        {'filename': '309 hats1_021_wav.wav', 'category': 'snare', 'offset': 2.68292682927}
+      ]
+      
+      // https://gist.github.com/JordanDelcros/518396da1c13f75ee057
+      function blendcolors(base, added) {
+        var mix = []
+        mix[3] = 1 - (1 - added[3]) * (1 - base[3])
+        mix[0] = Math.round((added[0] * added[3] / mix[3]) + (base[0] * base[3] * (1 - added[3]) / mix[3]))
+        mix[1] = Math.round((added[1] * added[3] / mix[3]) + (base[1] * base[3] * (1 - added[3]) / mix[3]))
+        mix[2] = Math.round((added[2] * added[3] / mix[3]) + (base[2] * base[3] * (1 - added[3]) / mix[3]))
 
-here are the fokin data: [[LIBRARY]]
+        return mix
+      }
+      
+      var dataEl = document.querySelector('#data-place')
+      
+      for (var filemeta of data) {
+        console.log(filemeta)
+        
+        dataEl.insertAdjacentHTML('beforeend', `<div class="sample ${filemeta.category}" data-filename="${filemeta.filename}" style="left: ${filemeta.offset}%"><div class="sample-details"><strong>${filemeta.filename}</strong><br>${filemeta.category}, ${filemeta.offset}</div></div>`)
+      }
+    </script>
+  </body>
+</html>
