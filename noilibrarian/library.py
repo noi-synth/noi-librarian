@@ -11,7 +11,7 @@ def readlibfile(libfile):
     def separate(item):
         filename, category, offset = item.split(',')
         return {
-            'filename': filename, 'category': category, 'offset': int(offset)
+            'filename': filename, 'category': category, 'offset': float(offset)
         }
         
     read = map(separate, f.read().splitlines())

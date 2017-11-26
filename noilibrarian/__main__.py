@@ -1,19 +1,29 @@
+import sys
 import noilibrarian.library
+import noilibrarian.server
 
-def main(args=None):
+def main(args=sys.argv):
+    command = 'maintain' if len(args) < 2 else args[1]
+    
+    if not command in ['maintain', 'server']:
+        raise RuntimeError('Unknown command {}'.format(command))
+    
     libpath = 'library/'
+    port = 8000
     
-    print('creating library...')
-    library = noilibrarian.library.create(libpath, True, r'.*\.wav')
-    
-    # print(library)
-    
-    print('maintaining library...')
-    new_metadata = noilibrarian.library.maintain(library)
-    # print(new_metadata)
-    
-    print('saving maintained library...')
-    noilibrarian.library.update(libpath, new_metadata)
+    if command == 'maintain':
+        print('creating library...')
+        library = noilibrarian.library.create(libpath, True, r'.*\.wav')
+        
+        print('maintaining library...')
+        new_metadata = noilibrarian.library.maintain(library)
+        
+        print('saving maintained library...')
+        noilibrarian.library.update(libpath, new_metadata)
+        
+    elif command == 'server':
+        print('starting server on port {}...'.format(port))
+        noilibrarian.server.run(port, libpath)
     
     print('done.')
 
