@@ -1,0 +1,76 @@
+= NOI Librarian
+Marián Hlaváč <marian.hlavac@fit.cvut.cz>
+v0.5, 2017-12-03
+:toc:
+
+Zpráva projektu MI-VMM -- Třídění a kategorizace zvukových samplů 
+pro embedded zařízení
+
+Marián Hlaváč, marian.hlavac@fit.cvut.cz
+
+== Popis
+
+Semestrální projekt vychází z nabídky dostupných zadání semestrálních prací
+předmětu MI-VMM. Z kategorie zadání "Podobnostní vyhledávání v audiu" vychází
+z projektu s názvem "Obecná podobnost".
+
+Zadání bylo upraveno na podobnost krátkých zvukových záznamů (samplů) a obecnou
+podobnost povyšuje na kategorizaci a třídění těchto samplů. Projekt má pak
+reálné využití, jeho výstup bude použit na jednoduchém embedded zařízení.
+Dalším požadavkem je tak příprava výstupních dat snadno čitelných takovým 
+zařízením.
+
+Projekt byl pojmenován *NOI Librarian*, jelikož bude fungovat jako modul, 
+který vytváří knihovnu zvukových samplů pro zmíněné zařízení *NOI Synthesizer*. 
+Více informací o projektu lze nalézt na 
+https://github.com/noi-synth[GitHubu projektu NOI].
+
+== Způsob řešení
+
+Program bude kategorizovat zvukové samply pomocí porovnávání samplů vůči 
+referenčním samplům. Každý sample pak bude kategorizován do kategorie, 
+které je nejpodobnější a zároveň získá i vlastnost o tom, s jakou 
+pravděpodobností do tého kategorie patří.
+
+Tyto informace budou pak vyneseny na graf (v tomto případě o jedné dimenzi), 
+který bude vizualizovat jejich pozici vůči těmto kategoriím. 
+
+Pro jednoduchost jsou jako referenční samply zvoleny tři distinktivní druhy 
+zvuků na bicí:
+
+ - kick (basový buben)
+ - snare (virbl)
+ - hi-hat (hi-hat činel)
+ 
+Všechny tyto informace pak budou uloženy do jednoduchého metadata souboru, 
+který bude zařízení číst pro získání informací o knihovně samplů.
+
+Jelikož zařízení prozatím neexistuje, pro účely předmětu MI-VMM bude 
+vytvořena HTML simulace tohoto rozhraní, na kterém se budou data zobrazovat. 
+Budou čteny stejným způsobem, jako by je četlo zařízení -- z výstupního metadata 
+souboru.
+
+=== Možnosti řešení
+
+K provádění zmíněného porovnávání samplů bude sloužit určitá volba algoritmů, 
+což je primární předmět experimentální části tohoto projektu.
+
+Obecně se z každého samplu pomocí nějakých deskriptorů vytvoří nějaká popisující
+sekvence, která se navzájem porovná pomocí DTW (Dynamic Time Warping).
+
+=== Výběr způsobu řešení
+
+== Implementace
+
+== Příklad výstupu
+
+== Experimentální sekce
+
+=== Volba deskriptorů
+
+== Diskuze
+
+=== Budoucí vylepšení
+
+== Závěr
+
