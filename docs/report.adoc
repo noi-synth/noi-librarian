@@ -2,6 +2,7 @@
 Marián Hlaváč <marian.hlavac@fit.cvut.cz>
 v0.5, 2017-12-03
 :toc:
+:stem: latexmath
 
 Zpráva projektu MI-VMM -- Třídění a kategorizace zvukových samplů 
 pro embedded zařízení
@@ -58,6 +59,10 @@ což je primární předmět experimentální části tohoto projektu.
 Obecně se z každého samplu pomocí zvolených deskriptorů vytvoří nějaká 
 popisující sekvence, která se navzájem porovná pomocí _DTW_ (Dynamic Time Warping).
 
+Po prozkoumání librosa dokumentace jsem se rozhodl, že prozkoumám deskripci
+zvuků pomocí MFCC a transformace na frekvenční domény (k tomu vnitřně librosa
+využívá rychlé Fourierovy transformace).
+
 Jelikož se samply liší i tvarem waveformu (křivkou signálu), nabízí se i 
 porovnání tohoto tvaru. Takový přístup však vyžaduje složitější úpravu signálu
 před jeho porovnáváním, jako např. oříznutí ticha z obou stran.
@@ -67,7 +72,30 @@ sekvencí a opět je to jeden z předmětů experimentu.
 
 === Experimentální sekce
 
-> F2 testování přesnosti různých způsobů
+Po naimplementování MFCC jsem se rozhodl vyzkoušet celý balíček několika samplů
+a zhodnotit přesnost.
+
+==== Počet MFCC koeficientů
+
+Librosa ve své metodě pro výpočet MFCC má parametr pro nastavení počtu
+vypočtených koeficientů. Zkoumal jsem tento parametr pro nastavení jednoho
+koeficientu, deseti koeficientů a maximálního počtu -- dvaceti koeficientů.
+Následně jsem si vykresloval křivku DTW, znázorňující optimální cestu warpingu.
+Tato křivka mi pak dala informaci o tom, jak se dané sekvence podobají.
+
+Z této křivky jsem pak vždy vypočítal vzdálenost těchto sekvencí, pomocí formule
+
+stem:[dist = x - y]
+
+Pro totožné samply to fungovalo dobře, takže základní kontrola (sanity check) 
+prochází. (Na grafu lze vidět červenou lineární křivku x = y)
+
+image::subseq-gud-kickkick.png[]
+
+Pro negativní výsledky (nepodobnost) metoda fungovala také správně, ukázala
+kladnou vzdálenost při porovnávání hi-hat samplu a kick samplu.
+
+image::subseq-gud-kickkick.png[]
 
 === Výběr způsobu řešení
 
