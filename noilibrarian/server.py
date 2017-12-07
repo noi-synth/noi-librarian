@@ -17,7 +17,9 @@ def replaceplaceholders(libpath):
         
         with fileinput.FileInput(join('dist', 'index.html'), inplace=True, backup='.bak') as file:
             for line in file:
-                print(line.replace('[[LIBRARY]]', str(library)), end='')
+                line = line.replace('[[LIBRARY]]', str(library))
+                line = line.replace('[[LIBRARY_FOLDER]]', "\"../" + str(libpath) + "\"")
+                print(line, end='')
     else:
         print('library file {} does not exists. data missing.'.format(libfile))
 
@@ -28,3 +30,8 @@ def run(port, libpath):
     with socketserver.TCPServer(("", port), http.server.SimpleHTTPRequestHandler) as httpd:
         print('open http://localhost:{}/dist'.format(port))
         httpd.serve_forever()
+        
+def refresh(libpath):
+    copyfiles()
+    replaceplaceholders(libpath)
+    

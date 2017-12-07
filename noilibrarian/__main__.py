@@ -5,7 +5,7 @@ import noilibrarian.server
 def main(args=sys.argv):
     command = 'maintain' if len(args) < 2 else args[1]
     
-    if not command in ['maintain', 'server']:
+    if not command in ['maintain', 'server', 'refresh']:
         raise RuntimeError('Unknown command {}'.format(command))
     
     libpath = 'library/'
@@ -24,6 +24,10 @@ def main(args=sys.argv):
     elif command == 'server':
         print('starting server on port {}...'.format(port))
         noilibrarian.server.run(port, libpath)
+        
+    elif command == 'refresh':
+        print('refershing server data')
+        noilibrarian.server.refresh(libpath)
     
     print('done.')
 

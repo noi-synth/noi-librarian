@@ -59,6 +59,7 @@ h1 {
 
 .sample:hover {
   border-color: white;
+  cursor: pointer;
 }
 
 .sample:hover .sample-details {
@@ -78,6 +79,18 @@ h1 {
 
 .sample.hihat {
   margin-left: 100%;
+  background: #5FAD56;
+}
+
+.sample.real-kick {
+  background: #4D9DE0;
+}
+
+.sample.real-snare {
+  background: #E0CA3C;
+}
+
+.sample.real-hihat {
   background: #5FAD56;
 }
 

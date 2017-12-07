@@ -18,31 +18,33 @@
     </div>
     
     <script type="text/javascript">
-      // var data = [[LIBRARY]]
-      var data = [
-        {'filename': '309 hats1_008_wav.wav', 'category': 'hihat', 'offset': -4.16666666667}, 
-        {'filename': '309 hats1_018_wav.wav', 'category': 'snare', 'offset': -3.64285714286}, 
-        {'filename': '309 hats1_021_wav.wav', 'category': 'snare', 'offset': 2.68292682927}
-      ]
-      
-      // https://gist.github.com/JordanDelcros/518396da1c13f75ee057
-      function blendcolors(base, added) {
-        var mix = []
-        mix[3] = 1 - (1 - added[3]) * (1 - base[3])
-        mix[0] = Math.round((added[0] * added[3] / mix[3]) + (base[0] * base[3] * (1 - added[3]) / mix[3]))
-        mix[1] = Math.round((added[1] * added[3] / mix[3]) + (base[1] * base[3] * (1 - added[3]) / mix[3]))
-        mix[2] = Math.round((added[2] * added[3] / mix[3]) + (base[2] * base[3] * (1 - added[3]) / mix[3]))
-
-        return mix
-      }
+      var data = [[LIBRARY]]
+      var libraryFolder = [[LIBRARY_FOLDER]]
       
       var dataEl = document.querySelector('#data-place')
       
+      var maxOffset = data.reduce(function(a, b) {
+          return Math.max(a, b.offset);
+      }, 0) * 3;
+      
       for (var filemeta of data) {
-        console.log(filemeta)
+        var visibleOffset = (filemeta.offset / maxOffset) * 100
+        if (filemeta.category == 'snare' && filemeta.altcategory == 'kick' || 
+            filemeta.category == 'hihat') {
+          visibleOffset *= -1
+        }
         
-        dataEl.insertAdjacentHTML('beforeend', `<div class="sample ${filemeta.category}" data-filename="${filemeta.filename}" style="left: ${filemeta.offset}%"><div class="sample-details"><strong>${filemeta.filename}</strong><br>${filemeta.category}, ${filemeta.offset}</div></div>`)
+        dataEl.insertAdjacentHTML('beforeend', `<div class="sample ${filemeta.category}" data-filename="${filemeta.filename}" style="left: ${visibleOffset}%"><div class="sample-details"><strong>${filemeta.filename}</strong><br>${filemeta.category}, ${filemeta.offset}</div></div>`)
       }
+      
+      dataEl.addEventListener('click', function(ev) {
+        console.log(ev.target)
+        if (ev.target.getAttribute('data-filename')) {
+          var audio = new Audio(libraryFolder + ev.target.getAttribute('data-filename'));
+          audio.play();
+        }
+      })
+      
     </script>
   </body>
 </html>

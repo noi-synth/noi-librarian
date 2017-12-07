@@ -9,9 +9,12 @@ def readlibfile(libfile):
     f = open(libfile, 'r') 
     
     def separate(item):
-        filename, category, offset = item.split(',')
+        filename, category, offset, categoryalt = item.split(',')
         return {
-            'filename': filename, 'category': category, 'offset': float(offset)
+            'filename': filename, 
+            'category': category, 
+            'offset': float(offset),
+            'categoryalt': categoryalt
         }
         
     read = map(separate, f.read().splitlines())
@@ -54,20 +57,22 @@ def maintain(library):
     storedfiles = list(map(lambda x: x['filename'], library['metadata']))
     metadata = library['metadata']
     
+
     # Get files needs to be maintained
     for f in filter(lambda x: x not in storedfiles, library['files']):
         print('maintaining file {}...'.format(f))
         # Load audio file
         audio = loadaudio(join(library['path'], f))
-        
+
         # Classify each file
-        category, offset = classify(audio)
+        category, offset, categoryalt = classify(audio)
         
         # Append result to metadata collection
         metadata.append({
             'filename': f,
             'category': category,
             'offset': offset,
+            'categoryalt': categoryalt,
         })
         
     return { 'path': library['path'], 'files': library['files'], 'metadata': metadata }
