@@ -27,10 +27,10 @@ def compareto(audio, reference):
     score = 0
     
     D, wp = dtw(mfccX[0], mfccY[0])
-    score += getscore(wp)
+    score += getscore(wp) * 2
     
     D, wp = dtw(chromaX, chromaY)
-    score += getscore(wp) * 2
+    score += getscore(wp)
     
     distances.append(score / 3)
     
