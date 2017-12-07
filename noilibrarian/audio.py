@@ -10,3 +10,17 @@ def loadaudio(filename):
     # y = resample(y, sr, 5512)
     
     return (y, sr)
+
+def loadtrimmedaudio(filename):
+    y, sr = loadaudio(filename)
+    
+    ty = list(map(lambda x: 0 if x < 0 else x, y))
+    maximum = max(ty)
+    start = 0
+    
+    for i in range(0, len(ty)):
+        if ty[i] > maximum * 0.05:
+            start = i
+            break
+    
+    return (ty[start::], sr)

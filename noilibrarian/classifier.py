@@ -1,44 +1,50 @@
 from noilibrarian.audio import loadaudio
-from librosa import feature, display, dtw, resample
+from librosa import feature, display, dtw, resample, stft
 import numpy as np
-import matplotlib.pyplot as plt
+import noilibrarian.library
 
 def loadreference(refname):
     return loadaudio('noilibrarian/reference/' + refname + '.wav')
+
+def getscore(wp):
+    distance = 0
+    for row in wp:
+        distance += abs(row[0] - row[1])
+    return distance
+        
 
 def compareto(audio, reference):
     xy, xsr = audio
     yy, ysr = reference
     
-    X = feature.chroma_stft(y=xy, sr=xsr)
-    Y = feature.chroma_stft(y=yy, sr=ysr)
+    mfccX = feature.mfcc(y=xy, sr=xsr)
+    mfccY = feature.mfcc(y=yy, sr=ysr) 
     
-    mfccD, mfccWP = dtw(X, Y, subseq=True)
-    wfD, wfWP = dtw(resample(xy, xsr, 64), resample(yy, ysr, 64), subseq=True)
-
-    distance = 0
-
-    for row in mfccWP:
-        distance += abs(row[0] - row[1])
-        
-    for row in wfWP:
-         distance += abs(row[0] - row[1])
-        
-    return distance / (len(mfccWP) + len(wfWP))
+    chromaX = feature.chroma_cqt(y=xy, sr=xsr)
+    chromaY = feature.chroma_cqt(y=yy, sr=ysr) 
+    
+    distances = []
+    score = 0
+    
+    D, wp = dtw(mfccX[0], mfccY[0])
+    score += getscore(wp)
+    
+    D, wp = dtw(chromaX, chromaY)
+    score += getscore(wp) * 2
+    
+    distances.append(score / 3)
+    
+    return sum(distances) / len(distances)
 
 def classify(audio):    
-    distances = {
-        'kick': compareto(audio, loadreference('kick')),
-        'snare': compareto(audio, loadreference('snare')),
-        'hihat': compareto(audio, loadreference('hihat')),
-    }
+    distances = [
+        { 'category': 'kick', 'distance': compareto(audio, loadreference('kick')) },
+        { 'category': 'snare', 'distance': compareto(audio, loadreference('snare')) },
+        { 'category': 'hihat', 'distance': compareto(audio, loadreference('hihat')) },
+    ]
     
-    lowest = ('none', float('inf'))
+    distances.sort(key=lambda x: x['distance'])
     
-    for distance in distances:
-        if distances[distance] < lowest[1]:
-            lowest = (distance, distances[distance])
-        
-    print(' \_ lowest distance is {}', lowest)
+    print(distances)
     
-    return lowest
+    return (distances[0]['category'], distances[0]['distance'], distances[1]['category'])
