@@ -1,8 +1,7 @@
 = NOI Librarian
 Marián Hlaváč <marian.hlavac@fit.cvut.cz>
-v0.5, 2017-12-03
+v1.0, 2017-12-05
 :toc:
-:stem: latexmath
 
 Zpráva projektu MI-VMM -- Třídění a kategorizace zvukových samplů 
 pro embedded zařízení
@@ -22,8 +21,8 @@ Dalším požadavkem je tak příprava výstupních dat snadno čitelných takov
 zařízením.
 
 Projekt byl pojmenován *NOI Librarian*, jelikož bude fungovat jako modul, 
-který vytváří knihovnu zvukových samplů pro zmíněné zařízení _NOI Synthesizer_. 
-Více informací o projektu lze nalézt na 
+který vytváří knihovnu zvukových samplů pro zmíněné budoucí zařízení 
+_NOI Synthesizer_. Více informací o projektu lze nalézt na 
 https://github.com/noi-synth[GitHubu projektu NOI].
 
 == Způsob řešení
@@ -57,7 +56,8 @@ K provádění zmíněného porovnávání samplů bude sloužit určitá volba 
 což je primární předmět experimentální části tohoto projektu.
 
 Obecně se z každého samplu pomocí zvolených deskriptorů vytvoří nějaká 
-popisující sekvence, která se navzájem porovná pomocí _DTW_ (Dynamic Time Warping).
+popisující sekvence, která se navzájem porovná pomocí _DTW_ 
+(Dynamic Time Warping).
 
 Po prozkoumání librosa dokumentace jsem se rozhodl, že prozkoumám deskripci
 zvuků pomocí MFCC a transformace na frekvenční domény (k tomu vnitřně librosa
@@ -85,7 +85,7 @@ Tato křivka mi pak dala informaci o tom, jak se dané sekvence podobají.
 
 Z této křivky jsem pak vždy vypočítal vzdálenost těchto sekvencí, pomocí formule
 
-stem:[dist = x - y]
+`dist = x - y`
 
 Pro totožné samply to fungovalo dobře, takže základní kontrola (sanity check) 
 prochází. (Na grafu lze vidět červenou lineární křivku x = y)
@@ -93,13 +93,68 @@ prochází. (Na grafu lze vidět červenou lineární křivku x = y)
 image::subseq-gud-kickkick.png[]
 
 Pro negativní výsledky (nepodobnost) metoda fungovala také správně, ukázala
-kladnou vzdálenost při porovnávání hi-hat samplu a kick samplu.
+kladnou vzdálenost při porovnávání hi-hat samplu a kick samplu. 
+(Světle modrá je x = y.)
 
-image::subseq-gud-kickkick.png[]
+image::subseq-snarekick.png[]
+
+Při porovnávání zvuků, které měly spadat do stejné kategorie, však úspěchu
+dosaženo nebylo. Všechny různé počty koeficientů uváděly vzdálenost kicku od
+jiného kicku větší, než například vzdálenost od hi-hatu. Při poslechu však
+bylo jasné, že jde skutečně o různé zvuky a kick na kick je skutečně podobný.
+
+image::subseq-bad-kickkick.png[]
+
+image::subseq-bad-hatkick.png[]
+
+Vyzkoušel jsem úspěšnost zařazení do správné kategorie na mém malém vzorku
+zvuků podle toho, kolik koeficientů zvolím. Ukázalo se, že čím více koeficientů
+je uvažováno, tím větší chyba zařazení je.
+
+image::mfccaccuracy.png[]
+
+Zkoušel jsem různé varianty tohoto zkoumání, i jednotlivé koeficienty, či jejich
+podskupiny. Nepodařilo se dosáhnout větší přesnosti, než 70%.
+
+=== Odhad z chromagramů
+
+Librosa nabízí i snadno přístupný výpočet chromagramů pro dané zvuky.
+Chromagram vychází z dat, kdy je zvuk rozkategorizován do několik 
+"výškových tříd" (tzv. pitch classes) a těmto třídám je pak ke každému zvuku
+uvedeno v kterém časovém úseku do které třídy jak moc spadá.
+
+image::spectro.png[]
+
+Těmito daty jsme tak schopní popsat různé výšky i hloubky v určitých částech
+zvukového samplu.
+
+Předpokládal jsem, že společně s MFCC se zvýší přesnost na téměr bezchybnou, 
+bohužel tak dobrého výsledku jsem se nedočkal. Chromagramy trpěly zase jinými
+problémy, kterými MFCC netrpí. Většinu z těchto problému nejde popsat, ale
+především slyšet.
+
+=== Ořez zleva
+
+Pro přesnější výpočty jsem stanovil hranici amplitudy a prováděl ořez zleva,
+aby byly DTW porovnání přesnější a zachytili jsme skutečně sample od svého
+začátku.
+
+Hodnotu hranice jsem zvolil jako `max_amplituda * 0.05`.
+
+image::trim.png[]
 
 === Výběr způsobu řešení
 
-> F2 výběr nejpřesnějšího
+Protože MFCC obecně podávalo lepší výsledek, než chromagramy, rozhodl jsem se
+počítat vzdálenost pomocí obou metod, a MFCC přidělit dvounásobnou váhu.
+
+Vzdálenost je tak počítána pomocí:
+
+`distance = (2 * mfcc_distance + chroma_distance) / 3`
+
+Díky tomu se využilo nedokonalého výsledku z MFCC metody a setřelo se několik
+rozdílů díky dat z chromagramů.
+Výsledná přesnost se však pohybuje kolem 75%, což stále není příliš ideální.
 
 == Implementace
 
@@ -116,7 +171,7 @@ Příkaz `maintain` prohledá složku s knihovnou a vytvoří či upraví soubor
 Příkaz `server` pak spustí jednoduchý webový server se simulací rozhraní 
 zařízení, které výše zmíněný soubor vizualizuje.
 
-Je tedy záměrem spustit `maintain` a `server` sekvenčně za sebou.
+Je tedy účelné spustit `maintain` a `server` za sebou.
 
 === Požadavky na běh
 
@@ -138,11 +193,31 @@ zařízení z počítače.
 
 === Příklad výstupu
 
-> F2 hodit tam něco z hotový appky
+image::result.png[]
 
 == Diskuze
 
-> deep learning
+Je zřejmé, že detekce není ideální. Ve spoustě specifických případů porovnávání
+a kategorizace selhává.
+
+Některé z případů jsou skutečně zapříčiněny nedostatkem deskriptivních informací
+o daném zvuku. Je tak například u hi-hatů možné pozorovat, že mnohem více k
+hi-hatu sklouzávají spíše zvuky, které jsou krátké a tiché, než zvuky,
+které skutečně zní, jako hi-hat.
+
+Dále například kicky, které kromě hloubkového tónu jsou výrazné i nějakým
+zvukem kliknutí nebo vyššího úderu jsou zařazovány kamkoliv jinam, 
+než ke kickům.
+
+Dobrým nápadem by bylo místo porovnávání vůči referenčním zvukům, jednotlivým
+kategoriím přiřadit spíše vážený seznam určitých vlastností (např. kickům
+  převládající hloubkový tón). Taková metoda by mohla fungovat daleko lépe.
+  
+Zajímavějším nápadem by pak mohl být i deep learning. Z ukázky, ze které jsem 
+vycházel 
+(https://experiments.withgoogle.com/ai/drum-machine[Drum Machine Experiment])
+je zřejmé, že by taková volba metody fungovala. V uvedené aplikaci funguje 
+výborně.
 
 === Budoucí vylepšení
 
@@ -153,9 +228,25 @@ rozhraní, zobrazující takovou kategorizaci.
 
 To by se mohlo zobrazovat jako běžný seznam, nebo graf po aplikaci pokročilejší 
 k-NN klasifikace, která by mohla být pro tento účel v rozšířené verzi ideální.
-> o deep learning, uživatelské rozhraní, etc.
+
+Samozřejmostí by mezi budoucí vylepšení patřilo i vylepšení samotné detekce,
+jako jsem zmiňoval již v "Diskuzi".
 
 == Závěr
+
+Výsledek působí smíšeným dojmem, možná však jen subjektivně. Má očekávání byla
+vysoká a pravděpodobně silně ovliněna inspirací v existující aplikaci,
+která však zvuky deketuje mnohem pokročilejší metodou.
+
+Velmi přibližně však ke kategorizaci dochází a pokud uživatelské rozhraní
+skutečně bude fungovat podobně, jako na ukázkovém výstupu, a nebude zvuky
+třídit nutně exkluzivně do složek, pak by mohl být výsledek uspokojující.
+
+Pokud uživatel nemá možnost třídit zvuky podle jména, nebo jména souborů těchto
+zvuků nijak nevypovídají o charakteristice zvuku (naprosto běžná situace v 
+balíčcích zvuků běžně dostupných na internetu), lze o aplikaci říci, že je 
+užitečná, protože poskytuje rozhodně lepší seřazení zvuků než naprosto žádné, 
+či chaotické dle nicneříkajících názvů souborů.
 
 == Zdroje
 
